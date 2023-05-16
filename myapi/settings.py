@@ -30,7 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['drf-quiz-test.fly.dev']
+CSRF_TRUSTED_ORIGINS = ['https://drf-quiz-test.fly.dev']
 
 # Application definition
 
