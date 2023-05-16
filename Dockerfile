@@ -1,15 +1,24 @@
-FROM python:3.11.3
+ARG PYTHON_VERSION=3.11-slim-buster
 
-COPY requirements.txt ./
+FROM python:${PYTHON_VERSION}
 
-RUN pip install --no-cache-dir -r requirements.txt
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-WORKDIR /app
+RUN mkdir -p /code
 
-WORKDIR ./quiz_backend
+WORKDIR /code
 
-COPY . .
+COPY requirements.txt /tmp/requirements.txt
+RUN set -ex && \
+    pip install --upgrade pip && \
+    pip install -r /tmp/requirements.txt && \
+    rm -rf /root/.cache/
+COPY . /code
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENV SECRET_KEY "tVz2GbFflZuxrEeTABqMP7ddt5RCP6QDnkGAxwSqn0YRur38sK"
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
+
+CMD ["gunicorn", "--bind", ":8000", "--workers", "2", "myapi.wsgi"]
